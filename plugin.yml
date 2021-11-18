@@ -1,0 +1,9 @@
+name: Hashicorp Vault Plugin
+description: The Vault plugin integrates Clarive with the Vault REST API
+version: 1.0
+icon: https://cdn.rawgit.com/clarive/cla-vault-plugin/master/public/icon/vault.png?sanitize=true
+url: https://github.com/clarive/cla-vault-plugin
+requires:
+  - clarive_version: 7.4 <= version
+dependencies:
+  - cla-vault-plugin
