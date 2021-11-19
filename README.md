@@ -7,8 +7,7 @@ set and get credentials.
 
 ## Requirements
 
-There are no requirements outlined in Clarive in order to work with this
-plugin.
+This plugin requires Clarive 7.8 or greater.
 
 ## Installation
 

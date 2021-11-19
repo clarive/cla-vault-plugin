@@ -1,3 +1,5 @@
+declare var _;
+declare var require;
 const reg = require('cla/reg');
 
 const rulebook = {
@@ -38,6 +40,7 @@ const handlerSet = (ctx, params) => {
     const log = require('cla/log');
 
     const { vaultEndpoint, vaultPath, secretKey, secretValue } = params;
+    const title = params.meta?.text || 'Vault Set';
     let errors = params.errors || 'fail';
 
     const vault = ci.load(vaultEndpoint);
@@ -52,7 +55,6 @@ const handlerSet = (ctx, params) => {
     const token = vault.token()?.trim();
     const body = {};
     body[secretKey] = secretValue;
-
 
     let output;
 
@@ -82,21 +84,25 @@ const handlerSet = (ctx, params) => {
     if (typeof output === 'object') {
         const status = output.status;
 
+        log.info(`Vault: ${_('%1: task finished', title)}`, output);
         if (status == 200 || status == 204) {
             return { success: 1, status };
         } else if (errors === 'return') {
+            log.error(`Vault: ${_('%1: task error', title)}`, output);
             console.log('ERROR: ' + JSON.stringify(output) + '\n');
             return { success: 0, status, output };
         } else {
+            log.error(`Vault: ${_('%1: task error', title)}`, output);
             throw new Error('Vault Error: ' + status + '\n');
         }
     } else if (errors === 'return') {
-        console.log('ERROR Vault:\n' + output + '\n');
+        log.error(`Vault: ${_('%1: op error', title)}`, output);
         return {
             success: 0,
             status: output.status
         };
     } else {
+        log.error(`Vault: ${_('%1: op error', title)}`, output);
         throw new Error(
             'Invalid response from Vault REST API:\n' +
                 (typeof output === 'object' ? JSON.stringify(output) : output)
@@ -110,6 +116,7 @@ const handlerGet = (ctx, params) => {
     const log = require('cla/log');
 
     const { vaultEndpoint, vaultPath, secretKey } = params;
+    const title = params.meta?.text || 'Vault Get';
     const errors = params.errors || 'fail';
 
     const vault = ci.load(vaultEndpoint);
@@ -154,24 +161,27 @@ const handlerGet = (ctx, params) => {
 
         if (status == 200 || status == 204) {
             const data = output.content.data;
+            log.info(`Vault: ${_('%1: task finished', title)}`, output);
             if (secretKey.length) {
                 return data[secretKey];
             } else {
                 return data;
             }
         } else if (errors === 'return') {
-            console.log('ERROR: ' + JSON.stringify(output) + '\n');
+            log.error(`Vault: ${_('%1: task error', title)}`, output);
             return { success: 0, status, output };
         } else {
+            log.error(`Vault: ${_('%1: task error', title)}`, output);
             throw new Error('Vault Error: ' + status + '\n');
         }
     } else if (errors === 'return') {
-        console.log('ERROR:\n' + output + '\n');
+        log.error(`Vault: ${_('%1: op error', title)}`, output);
         return {
             success: 0,
             output
         };
     } else {
+        log.error(`Vault: ${_('%1: op error', title)}`, output);
         throw new Error(
             'Invalid response from Vault REST API:\n' +
                 (typeof output === 'object' ? JSON.stringify(output) : output)

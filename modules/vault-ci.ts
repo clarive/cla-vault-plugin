@@ -1,3 +1,5 @@
+declare var _;
+declare var require;
 const ci = require("cla/ci");
 
 ci.createRole("Vault");
